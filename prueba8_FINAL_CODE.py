@@ -34,12 +34,12 @@ def mostrar_resultados(resultados):
 
     result_window = tk.Toplevel(root)
     result_window.title("Investigaciones encontradas")
-    result_window.geometry("1100x700")
-    center_window(result_window, 1100, 700)
+    result_window.geometry("1200x700")
+    center_window(result_window, 1200, 700)
     result_window.configure(bg=COLORS['cornsilk']['DEFAULT'])
 
     canvas = tk.Canvas(result_window, bg=COLORS['cornsilk']['DEFAULT'], highlightthickness=0)
-    scrollbar = ttk.Scrollbar(result_window, orient="vertical", command=canvas.yview)
+    scrollbar = ttk.Scrollbar(result_window, orient="vertical", command=canvas.yview, style='Custom.Vertical.TScrollbar')
     scrollable_frame = ttk.Frame(canvas, style='Result.TFrame')
 
     scrollable_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
@@ -49,7 +49,6 @@ def mostrar_resultados(resultados):
     canvas.pack(side="left", fill="both", expand=True, padx=(30, 0), pady=20)
     scrollbar.pack(side="right", fill="y")
 
-    # Agregar evento para la rueda del mouse
     result_window.bind_all("<MouseWheel>", lambda event: canvas.yview_scroll(int(-1*(event.delta/120)), "units"))
 
     style.configure('Result.TFrame', background=COLORS['cornsilk']['DEFAULT'])
@@ -72,18 +71,20 @@ def mostrar_resultados(resultados):
         content_frame = ttk.Frame(item_frame, style='CardContent.TFrame')
         content_frame.pack(fill="both", expand=True, padx=15, pady=15)
 
-        titulo_label = ttk.Label(content_frame, text=resultado['TITULO'].strip(), font=('Montserrat', 13, 'bold'), foreground=COLORS['buff']['800'], wraplength=650, justify='left', style='CardTitle.TLabel')
-        titulo_label.pack(anchor='w', pady=(0, 10))
+        titulo_text = tk.Text(content_frame, wrap='word', font=('Montserrat', 13, 'bold'), foreground=COLORS['buff']['800'], bg='white', height=2, borderwidth=0)
+        titulo_text.insert(tk.END, resultado['TITULO'].strip())
+        titulo_text.config(state=tk.DISABLED)
+        titulo_text.pack(anchor='w', pady=(0, 10), fill='x')
 
-        autor_label = ttk.Label(content_frame, text="Autor:", font=('Segoe UI', 11, 'bold'), foreground=COLORS['tea_green']['200'], style='CardBold.TLabel')
-        autor_label.pack(anchor='w')
-        autor_value_label = ttk.Label(content_frame, text=resultado['AUTORES'].strip(), font=('Segoe UI', 11), foreground=COLORS['tea_green']['200'], style='CardText.TLabel')
-        autor_value_label.pack(anchor='w')
+        autor_text = tk.Text(content_frame, wrap='word', font=('Segoe UI', 11, 'bold'), foreground=COLORS['tea_green']['200'], bg='white', height=1, borderwidth=0)
+        autor_text.insert(tk.END, "Autor: " + resultado['AUTORES'].strip())
+        autor_text.config(state=tk.DISABLED)
+        autor_text.pack(anchor='w', fill='x')
 
-        anio_label = ttk.Label(content_frame, text="Año:", font=('Segoe UI', 11, 'bold'), foreground=COLORS['tea_green']['200'], style='CardBold.TLabel')
-        anio_label.pack(anchor='w')
-        anio_value_label = ttk.Label(content_frame, text=resultado['AÑO'].strip(), font=('Segoe UI', 11), foreground=COLORS['tea_green']['200'], style='CardText.TLabel')
-        anio_value_label.pack(anchor='w', pady=(5, 0))
+        anio_text = tk.Text(content_frame, wrap='word', font=('Segoe UI', 11, 'bold'), foreground=COLORS['tea_green']['200'], bg='white', height=1, borderwidth=0)
+        anio_text.insert(tk.END, "Año: " + resultado['AÑO'].strip())
+        anio_text.config(state=tk.DISABLED)
+        anio_text.pack(anchor='w', pady=(5, 0), fill='x')
 
     sali_image_path = r"C:\Users\pc\Desktop\MAHPSA\images\sali.png"
     sali_image = Image.open(sali_image_path)
@@ -93,7 +94,6 @@ def mostrar_resultados(resultados):
     sali_image_label.image = sali_photo
     sali_image_label.place(relx=1.0, rely=0.0, anchor='ne', x=-20, y=20)
 
-    # Agregar botón de home
     home_button = ttk.Button(result_window, text="Inicio", command=mostrar_bienvenida, style='Dialog.TButton')
     home_button.place(relx=1.0, rely=0.0, anchor='ne', x=-110, y=210)
 
@@ -115,10 +115,8 @@ def pedir_datos():
              background=[('active', COLORS['cornsilk']['300']), ('pressed', COLORS['cornsilk']['200'])],
              foreground=[('active', 'white'), ('pressed', COLORS['buff']['800'])])
 
-    # Añadir botón de regreso
     back_button = ttk.Button(root, text="← Volver", command=mostrar_bienvenida, style='Back.TButton')
     back_button.place(relx=0.0, rely=0.0, anchor='nw', x=10, y=10)
-    # Configuración de estilo para el botón de regreso
     style.configure('Back.TButton', font=('Segoe UI', 12, 'bold'), background=COLORS['cornsilk']['200'], foreground=COLORS['buff']['800'], padding=(1, 1))
 
     dialog_frame = ttk.Frame(root, style='Dialog.TFrame', padding="20 20 20 20")
@@ -198,7 +196,6 @@ def center_window(window, width, height):
     y = int((screen_height / 2) - (height / 2))
     window.geometry(f'{width}x{height}+{x}+{y}')
 
-# Definición de colores
 COLORS = {
     'tea_green': { 'DEFAULT': '#ccd5ae', '200': '#5b6635' },
     'beige': { 'DEFAULT': '#e9edc9' },
@@ -207,27 +204,27 @@ COLORS = {
     'buff': { 'DEFAULT': '#d4a373', '800': '#4d2c0d' }
 }
 
-# Ruta del archivo CSV
 ruta_archivo = r'C:\Users\pc\Desktop\MAHPSA\CHATBOT_CARIBE.csv'
-
-# Cargar datos de la base de datos
 investigaciones = cargar_datos(ruta_archivo)
-
-# Configuración de la ventana principal
 root = tk.Tk()
 
-# Aplicar estilos modernos
 style = ttk.Style()
 style.theme_use('clam')
 style.configure('TFrame', background=COLORS['papaya_whip']['DEFAULT'])
 style.configure('Title.TLabel', font=('Montserrat', 18, 'bold'), foreground=COLORS['buff']['800'], background=COLORS['papaya_whip']['DEFAULT'])
 style.configure('Text.TLabel', font=('Segoe UI', 12), foreground=COLORS['tea_green']['200'], background=COLORS['papaya_whip']['DEFAULT'])
 style.configure('TButton', font=('Segoe UI', 13, 'bold'), background=COLORS['cornsilk']['200'], foreground=COLORS['buff']['800'], padding=(15, 10))
-style.configure('Credit.TLabel', font=('Segoe UI', 10), foreground=COLORS['tea_green']['200'], background=COLORS['papaya_whip']['DEFAULT'])
+style.configure('Credit.TLabel', font=('Segoe UI', 10, 'italic'), foreground=COLORS['tea_green']['200'], background=COLORS['papaya_whip']['DEFAULT'])
 
 style.map('TButton',
          background=[('active', COLORS['cornsilk']['300']), ('pressed', COLORS['cornsilk']['200'])],
          foreground=[('active', 'white'), ('pressed', COLORS['buff']['800'])])
+
+# Estilo moderno para scrollbar
+style.element_create('Custom.Vertical.TScrollbar.trough', 'from', 'clam')
+style.layout('Custom.Vertical.TScrollbar',
+             [('Vertical.Scrollbar.trough', {'children': [('Vertical.Scrollbar.thumb', {'unit': 1, 'children': [('Vertical.Scrollbar.grip', {'sticky': ''})], 'sticky': 'nswe'})], 'sticky': 'ns'})])
+style.configure('Custom.Vertical.TScrollbar', troughcolor=COLORS['beige']['DEFAULT'], background=COLORS['buff']['DEFAULT'], darkcolor=COLORS['buff']['800'], lightcolor=COLORS['buff']['DEFAULT'])
 
 mostrar_bienvenida()
 
